@@ -1,24 +1,34 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter, Route, Routes, json } from "react-router-dom";
+import "./App.css";
+import { createContext, useState } from "react";
+import ProductDetails from "./pages/ProductDetails/ProductDetails";
+import ProductsList from "./pages/ProductsList/ProductsList";
+
+export const ThemeContext = createContext(null);
 
 function App() {
+  const themeInLS = localStorage.getItem("themeMod");
+  const [theme, setTheme] = useState(themeInLS || "light");
+
+  const handleThemeChange = () => {
+    if (theme === "light") {
+      setTheme("dark");
+      localStorage.setItem("themeMod", "dark");
+    } else {
+      setTheme("light");
+      localStorage.setItem("themeMod", "light");
+    }
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeContext.Provider value={{ theme, handleThemeChange }}>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<ProductsList />} />
+          <Route path="/products/:id" element={<ProductDetails />} />
+        </Routes>
+      </BrowserRouter>
+    </ThemeContext.Provider>
   );
 }
 
